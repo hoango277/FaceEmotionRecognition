@@ -10,23 +10,13 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Đăng ký các router
 app.include_router(auth_router, prefix="/auth", tags=["Authentication"])
 app.include_router(video_router, prefix="/video", tags=["Video Stream"])
 
-# Hàm khởi động và tắt ứng dụng
 async def startup_event():
-    """
-    Hàm xử lý khi ứng dụng khởi động.
-    Gọi các tiến trình cần thiết (nếu có).
-    """
     start_threads()
 
 async def shutdown_event():
-    """
-    Hàm xử lý khi ứng dụng tắt.
-    Dừng các tiến trình hoặc giải phóng tài nguyên.
-    """
     stop_threads()
 
 # Tích hợp các hàm khởi động/tắt ứng dụng vào lifecycle của FastAPI
@@ -38,10 +28,6 @@ async def custom_startup():
 async def custom_shutdown():
     await shutdown_event()
 
-# Endpoint mặc định
 @app.get("/")
 async def root():
-    """
-    Endpoint chính, trả về thông báo chào mừng.
-    """
     return {"message": "Welcome to the Face Emotion Recognition API"}

@@ -11,7 +11,6 @@ streaming = False
 
 # Hàm đọc và truyền video
 def video_stream(camera_index=0, queue=None):
-    """Hàm đọc khung hình từ camera và đẩy vào hàng đợi."""
     cap = CameraThread.open_camera(camera_index)
     while streaming:
         frame = CameraThread.capture_frame(cap)
