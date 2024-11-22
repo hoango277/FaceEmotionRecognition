@@ -29,7 +29,7 @@ class CameraThread(threading.Thread):
                 break
             frame = cv.flip(frame, 1)  # Flip frame for mirror effect
             # Every 5 frames, send to detection thread
-            if self.frame_count % 5 == 0:
+            if self.frame_count % 3 == 0:
                 if self.frame_queue.empty():
                     self.frame_queue.put(frame.copy())
 

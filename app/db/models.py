@@ -10,9 +10,7 @@ class User(Base):
     hashed_password = Column(String(50))
     role = Column(String(50))
     created_at = Column(TIMESTAMP)
-    emotion_histories = relationship("EmotionHistory", back_populates="user")
-    user_sessions = relationship("UserSession", back_populates="user")  # Sửa từ user_Sessions thành user_sessions
-    images = relationship("Image", back_populates="user")
+    user_sessions = relationship("UserSession", back_populates="user")
 
 class UserSession(Base):
     __tablename__ = 'user_session'  # Bảng user_session
@@ -23,5 +21,4 @@ class UserSession(Base):
     device = Column(String(100))
     created_at = Column(TIMESTAMP)
     last_accessed_at = Column(TIMESTAMP)
-
     user = relationship("User", back_populates="user_sessions")

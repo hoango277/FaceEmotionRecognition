@@ -1,25 +1,40 @@
-import queue
+import asyncio
+import base64
 
-from fastapi import APIRouter
-from threading import Thread
-
-from app.services.camera_thread import CameraThread, DetectionThread
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, APIRouter
+import cv2
 
 video_router = APIRouter()
-
-@video_router.get("/start")
-async def start_video_stream():
-    frame_queue = queue.Queue(maxsize=1)
-    result_queue = queue.Queue(maxsize=1)
-
-    camera_thread = CameraThread(frame_queue, result_queue)
-    detection_thread = DetectionThread(frame_queue, result_queue)
-
-    camera_thread.start()
-    detection_thread.start()
-
-    return {"message": "Video streaming started!"}
-
-@video_router.get("/stop")
-async def stop_video_stream():
-    return {"message": "Video streaming stopped!"}
+class VideoStream:
+    def __init__(self):
+        self.cap = cv2.VideoCapture(0)
+        if not self.cap.isOpened():
+            print("Cannot open camera")
+            self.running = False
+        else:
+            self.running = True
+    def get_frame(self):
+        if not self.running:
+            return None
+        ret, frame = self.cap.read()
+        if not ret:
+            return None
+        _, jpeg = cv2.imencode('.jpg', frame)
+        return base64.b64encode(jpeg.tobytes())
+    def stop(self):
+        if self.cap.isOpened():
+            self.cap.release()
+video_stream = VideoStream()
+@video_router.websocket('/ws')
+async def websocket_handler(websocket: WebSocket):
+    await websocket.accept()
+    try:
+        while True:
+            frame = video_stream.get_frame()
+            if frame:
+                await websocket.send_json(frame)
+            await asyncio.sleep(1)
+    except WebSocketDisconnect:
+        print("WebSocket disconnected")
+    finally:
+        video_stream.stop()
