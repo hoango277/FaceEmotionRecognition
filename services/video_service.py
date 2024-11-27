@@ -7,6 +7,8 @@ import time
 import numpy as np
 from tensorflow.keras.models import load_model
 
+from exception import raise_error
+
 
 class CameraThread(threading.Thread):
     def __init__(self, frame_queue, result_queue, frame_to_stream):
@@ -78,8 +80,8 @@ class DetectionThread(threading.Thread):
         threading.Thread.__init__(self)
         self.frame_queue = frame_queue
         self.result_queue = result_queue
-        self.model = YOLO('models/yolov8n-face.pt')
-        self.emotion_model = load_model('models/final_emotion_model.h5')
+        self.model = YOLO('resources/yolov8n-face.pt')
+        self.emotion_model = load_model('resources/final_emotion_model.h5')
         self.emotion_labels = ['Angry', 'Happy', 'Neutral', 'Sad', 'Surprise']
         self.running = True
 
@@ -138,7 +140,9 @@ class VideoService:
         self.detection_thread = None
         self.running = False
 
-    def get_video(self):
+    def get_video(self, user):
+        if user.get('user_role') != 'user':
+            return raise_error(100008)
         self.camera_thread = CameraThread(self.frame_queue, self.result_queue, self.frame_to_stream)
         self.detection_thread = DetectionThread(self.frame_queue, self.result_queue)
 
@@ -159,7 +163,9 @@ class VideoService:
 
         return StreamingResponse(generate_video(), media_type="multipart/x-mixed-replace; boundary=frame")
 
-    def stop_video(self):
+    def stop_video(self, user):
+        if user.get('user_role') != 'user':
+            return raise_error(100008)
         if self.detection_thread:
             self.detection_thread.stop()
             self.detection_thread.join()

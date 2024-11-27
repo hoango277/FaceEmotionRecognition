@@ -1,16 +1,10 @@
 from fastapi import FastAPI
 
-from services.video_service import  VideoService
+from routers.video import router as video_router
+from routers.authentication import router as authentication_router
 
 app = FastAPI()
 
+app.include_router(video_router)
+app.include_router(authentication_router)
 
-video_service = VideoService()
-@app.get("/stream")
-def get_video():
-    return video_service.get_video()
-
-@app.get("/stop")
-def stop_video():
-    video_service.stop_video()
-    return {"message": "Đã tắt stream"}
