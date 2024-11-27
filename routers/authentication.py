@@ -3,7 +3,6 @@ from fastapi.security import OAuth2PasswordRequestForm
 from starlette.status import HTTP_200_OK, HTTP_401_UNAUTHORIZED
 
 from configs.database import get_db
-from exception import raise_error
 from schemas.authentication import Register, Token
 from services.authentication_service import get_authentication_service
 
@@ -32,7 +31,7 @@ async def register(
     db = Depends(get_db),
     authen_service = Depends(get_authentication_service)
 ):
-        return authen_service.create_user(request, db)
+    return authen_service.create_user(request, db)
 
 
 

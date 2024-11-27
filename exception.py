@@ -7,12 +7,15 @@ EXCEPTION_CODE = {
 100004 : 'Register Failed',
 100005 : 'Update Password Failed',
 100008:'Only for user',
+100009:'Email does not exist!',
 100010:'Only for admin!',
+100011:'Email existed!',
 
 }
 
 def raise_error(error_code: int) -> BaseResponse:
     return BaseResponse(
+        data = [],
         message=EXCEPTION_CODE.get(error_code),
         status='error',
     )

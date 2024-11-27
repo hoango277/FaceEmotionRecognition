@@ -1,12 +1,16 @@
 from datetime import timedelta
 
+
 from sqlalchemy.orm import Session
+from starlette.status import HTTP_200_OK
+
 
 from configs.authentication import verify_password, get_password_hash, create_access_token
 
 from exception import raise_error
 from models.user import User
 from schemas.authentication import Token, Register
+from schemas.base_response import BaseResponse
 from schemas.user import User as UserSchema
 
 def get_authentication_service():
@@ -34,8 +38,11 @@ class AuthenticationService:
 
     def create_user(self, request: Register, db : Session):
         check = db.query(User).filter(User.username == request.username).first()
-        # if check:
-        #     # raise raise_error(100003)
+        check_email = db.query(User).filter(User.email == request.email).first()
+        if check :
+            return raise_error(100003)
+        if check_email :
+            return raise_error(100011)
         user = User(
             username = request.username,
             hashed_password = get_password_hash(request.password),
@@ -47,12 +54,16 @@ class AuthenticationService:
         db.add(user)
         db.commit()
         db.refresh(user)
-        return UserSchema(
+        return BaseResponse(
+            data = UserSchema(
             username = user.username,
             password = request.password,
             first_name = user.first_name,
             last_name = user.last_name,
             email = user.email,
             role = user.role,
+            ),
+            message = "Register successful!",
+            status = 'OK'
         )
 
