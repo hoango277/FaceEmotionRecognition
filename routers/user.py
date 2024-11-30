@@ -20,3 +20,12 @@ def change_user_info(
 
 ):
     return  user_service.change_user_info(user, user_info_change, db)
+
+@router.get("")
+def get_user_info(
+      cr_user = Depends(get_current_user),
+        db = Depends(get_db),
+        user_service = Depends(get_user_service)
+):
+    return user_service.get_user_info(cr_user, db)
+

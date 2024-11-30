@@ -25,3 +25,10 @@ class UserChange(BaseModel):
     email: str = Field(min_length=3, max_length=30)
     first_name: str = Field(min_length=3, max_length=30)
     last_name: str = Field(min_length=3, max_length=30)
+
+class UserResponse(BaseModel):
+    username: str = Field(min_length=3, max_length=30)
+    email: str = Field(min_length=3, max_length=30)
+    first_name: str = Field(min_length=3, max_length=30)
+    last_name: str = Field(min_length=3, max_length=30)
+    role: str = Field(min_length=3, max_length=30)

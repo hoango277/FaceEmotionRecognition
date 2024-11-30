@@ -1,11 +1,12 @@
+
 from sqlalchemy.orm import Session
-from ultralytics.data.utils import get_hash
+
 
 from configs.authentication import get_password_hash
-from exception import raise_error
+
 from models.user import User
 from schemas.base_response import BaseResponse
-from schemas.user import UserChange
+from schemas.user import UserChange, UserResponse
 
 
 def get_user_service():
@@ -33,5 +34,19 @@ class UserService:
 
         return BaseResponse(
             message='User info changed',
+            status = 'OK'
+        )
+
+    def get_user_info(self, cr_user, db:Session):
+        user = db.query(User).filter(User.username == cr_user.get('username')).first()
+        return BaseResponse(
+            data = UserResponse(
+                username = user.username,
+                email = user.email,
+                first_name = user.first_name,
+                last_name = user.last_name,
+                role = user.role
+            ),
+            message = 'Get user info successful',
             status = 'OK'
         )
