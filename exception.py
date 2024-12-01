@@ -10,6 +10,7 @@ EXCEPTION_CODE = {
 100009:'Email does not exist!',
 100010:'Only for admin!',
 100011:'Email existed!',
+100012: 'Password do not match'
 
 }
 

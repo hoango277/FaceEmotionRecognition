@@ -1,12 +1,13 @@
 
 from sqlalchemy.orm import Session
+from torch.fx.experimental.symbolic_shapes import rebind_unbacked
 
-
-from configs.authentication import get_password_hash
+from configs.authentication import get_password_hash, verify_password
+from exception import raise_error
 
 from models.user import User
 from schemas.base_response import BaseResponse
-from schemas.user import UserChange, UserResponse
+from schemas.user import UserChange, UserResponse, PasswordRequest
 
 
 def get_user_service():
@@ -25,7 +26,6 @@ class UserService:
                 status = 'error'
             )
 
-        user_to_change.hashed_password = get_password_hash(user_info_change.password)
         user_to_change.email = user_info_change.email
         user_to_change.first_name = user_info_change.first_name
         user_to_change.last_name = user_info_change.last_name
@@ -48,5 +48,19 @@ class UserService:
                 role = user.role
             ),
             message = 'Get user info successful',
+            status = 'OK'
+        )
+
+    def change_password(self, new_pass : PasswordRequest, cr_user, db:Session):
+        user = db.query(User).filter(User.username == cr_user.get('username')).first()
+
+        if not verify_password(new_pass.old_password, user.hashed_password):
+            return raise_error(100012)
+
+        user.hashed_password = get_password_hash(new_pass.new_password)
+        db.add(user)
+        db.commit()
+        return BaseResponse(
+            message='Password changed',
             status = 'OK'
         )

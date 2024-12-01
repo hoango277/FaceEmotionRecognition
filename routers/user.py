@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 
 from configs.authentication import get_current_user
 from configs.database import get_db
-from schemas.user import UserChange
+from schemas.user import UserChange, PasswordRequest
 from services.user_service import get_user_service
 
 router = APIRouter(
@@ -11,7 +11,7 @@ router = APIRouter(
 )
 
 
-@router.post("")
+@router.put("/info")
 def change_user_info(
         user_info_change : UserChange,
         user = Depends(get_current_user),
@@ -28,4 +28,13 @@ def get_user_info(
         user_service = Depends(get_user_service)
 ):
     return user_service.get_user_info(cr_user, db)
+
+@router.put("/password")
+def change_password(
+new_pass : PasswordRequest,
+    cr_user = Depends(get_current_user),
+        db = Depends(get_db),
+        user_service = Depends(get_user_service)
+):
+    return user_service.change_password(new_pass, cr_user, db)
 

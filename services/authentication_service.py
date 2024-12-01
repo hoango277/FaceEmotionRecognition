@@ -46,9 +46,9 @@ class AuthenticationService:
         user = User(
             username = request.username,
             hashed_password = get_password_hash(request.password),
-            first_name = request.first_name,
-            last_name = request.last_name,
-            email = request.email,
+            first_name = request.first_name.title(),
+            last_name = request.last_name.title(),
+            email = request.email.lower(),
             role=request.role,
         )
         db.add(user)

@@ -10,11 +10,11 @@ router = APIRouter(
 from services.video_service import VideoService
 
 video_service = VideoService()
-@router.post("/stream")
-def get_video(user = Depends(get_current_user)):
-    return video_service.get_video(user)
+@router.get("/stream")
+def get_video():
+    return video_service.get_video()
 
-@router.post("/stop")
-def stop_video(user = Depends(get_current_user)):
-    video_service.stop_video(user)
+@router.get("/stop")
+def stop_video():
+    video_service.stop_video()
     return {"message": "Đã tắt stream"}

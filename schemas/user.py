@@ -16,12 +16,8 @@ class PasswordRequest(BaseModel):
     old_password: str = Field(min_length=8, max_length=30)
     new_password: str = Field(min_length=8, max_length=30)
 
-class PasswordReset(BaseModel):
-    new_password: str = Field(min_length=8, max_length=30)
-    confirm_password: str = Field(min_length=8, max_length=30)
 
 class UserChange(BaseModel):
-    password: str = Field(min_length=8, max_length=30)
     email: str = Field(min_length=3, max_length=30)
     first_name: str = Field(min_length=3, max_length=30)
     last_name: str = Field(min_length=3, max_length=30)
