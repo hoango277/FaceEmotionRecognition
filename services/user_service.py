@@ -1,5 +1,6 @@
 
 from sqlalchemy.orm import Session
+from sympy.integrals.risch import NonElementaryIntegral
 from torch.fx.experimental.symbolic_shapes import rebind_unbacked
 
 from configs.authentication import get_password_hash, verify_password
@@ -20,11 +21,15 @@ class UserService:
     def change_user_info(self, user, user_info_change: UserChange, db:Session):
         user_to_change = db.query(User).filter(User.username == user.get('username')).first()
         mail_check = db.query(User).filter(User.email == user_info_change.email).first()
-        if mail_check.username != user_to_change.username:
-            return BaseResponse(
-                message='Email already registered',
-                status = 'error'
-            )
+
+
+        if mail_check is not None:
+            if mail_check.username != user_to_change.username:
+                return BaseResponse(
+                    message='Email already registered',
+                    status='error'
+                )
+
 
         user_to_change.email = user_info_change.email
         user_to_change.first_name = user_info_change.first_name
